@@ -1,11 +1,12 @@
 # Quantized Densely Connected U-Nets for Efficient Landmark Localization
 
 ## Overview
-Traditional random augmentation has two limitations. It doesn't consider the individual difference of training samples when doing augmentation. And it is also independent of the training status of the target network. To tackle these problems, we design an agent to learn more effective data augmentation. 
-<p align="center"><img src="figures/overview-1.jpg" alt="Adversarial Data Augmentation in Human Pose Estimation" width="400"></p>
-We model the training process as an adversarial learning problem. The agent (generator), conditioning on the individual samples and network status, tries to generate ''hard'' augmentations for the target network. The target network (discriminator), on the other hand, tries to learn better from the augmentations.
+The follwoing figure gives an illustration of naive dense U-Net, stacked U-Nets and coupled U-Nets (CU-Net). The naive dense U-Net and stacked U-Nets have shortcut connections only inside each U-Net. In contrast, the coupled U-Nets also have connections for semantic blocks across U-Nets. The CU-Net is a hybrid of naive dense U-Net and stacked U-Net, integrating the merits of both dense connectivity, intermediate supervisions and multi-stage top-down and bottom-up refinement. The resulted CU-Net could save ~70% parameters of the previous stacked U-Nets but with comparable accuracy.
+<p align="center"><img src="figures/framework-comparison.jpg" alt="" width="400"></p>
 
-<p align="center"><img src="figures/overview-2.jpg" alt="Adversarial Data Augmentation in Human Pose Estimation" width="600"></p>
+If we couple each U-Net pair in multiple U-Nets, the coupling connections would have quadratic growth with respect to the U-Net number. To make the model more parameter efficient, we propose the order-K coupling to trim off the long-distance shortcut connections.
+<p align="center"><img src="figures/order-k.jpg" alt="" width="400"></p>
+For simplicity, each dot represents one U-Net. The red and blue lines are the shortcut connections of inside semantic blocks and outside inputs. $Order$-$0$ connectivity ({\bf Top}) strings U-Nets together only by their inputs and outputs, i.e. stacked U-Nets. $Order$-$1$ connectivity ({\bf Middle}) has shortcut connections for adjacent U-Nets. Similarly, $order$-$2$ connectivity ({\bf Bottom}) has shortcut connections for 3 nearby U-Nets.
 
 ### Prerequisites
 
