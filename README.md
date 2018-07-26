@@ -24,7 +24,7 @@ python cu-net.py --gpu_id 0 --exp_id cu-net-2 --layer_num 2 --order 1 --loss_num
 ### Validation
 
 ```
-python cu-net.py --gpu_id 0 --exp_id cu-net-2 --is_train false --bs 24 --resume_prefix your_pretrained_model.pth.tar
+python cu-net.py --gpu_id 0 --exp_id cu-net-2 --layer_num 2 --order 1 --loss_num 2 --resume_prefix your_pretrained_model.pth.tar --is_train false --bs 24
 ```
 
 ### Model Options
