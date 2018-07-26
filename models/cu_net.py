@@ -224,9 +224,9 @@ class _Bn_Relu_Conv1x1(nn.Sequential):
 #         return out
 
 
-class _Hourglass(nn.Module):
+class _CU_Net(nn.Module):
     def __init__(self, in_num, neck_size, growth_rate, layer_num, max_link):
-        super(_Hourglass, self).__init__()
+        super(_CU_Net, self).__init__()
         self.down_blocks = nn.ModuleList()
         self.up_blocks = nn.ModuleList()
         self.num_blocks = 4
@@ -268,33 +268,33 @@ class _Hourglass(nn.Module):
             # print 'output size is ', x.size()
         return x
 
-class _HourglassWrapper(nn.Module):
+class _CU_Net_Wrapper(nn.Module):
     def __init__(self, init_chan_num, neck_size, growth_rate,
-                 num_classes, layer_num, max_link, inter_loss_num):
-        assert inter_loss_num <= layer_num
-        inter_loss_every = float(layer_num) / float(inter_loss_num)
+                 class_num, layer_num, order, loss_num):
+        assert loss_num <= layer_num and loss_num >= 1
+        loss_every = float(layer_num) / float(loss_num)
         self.loss_achors = []
-        for i in range(0, inter_loss_num):
-            tmp_achor = int(round(inter_loss_every * (i+1)))
+        for i in range(0, loss_num):
+            tmp_achor = int(round(loss_every * (i+1)))
             if tmp_achor <= layer_num:
                 self.loss_achors.append(tmp_achor)
 
         assert layer_num in self.loss_achors
-        assert inter_loss_num == len(self.loss_achors)
+        assert loss_num == len(self.loss_achors)
 
-        if max_link >= layer_num:
-            print 'max link number is larger than the layer number.'
+        if order >= layer_num:
+            print 'order is larger than the layer number.'
             exit()
         print('layer number is %d' % layer_num)
-        print('loss number is %d' % inter_loss_num)
-	print('loss achors are: ', self.loss_achors)
-        print('max link number is %d' % max_link)
+        print('loss number is %d' % loss_num)
+        print('loss achors are: ', self.loss_achors)
+        print('order is %d' % order)
         print('growth rate is %d' % growth_rate)
         print('neck size is %d' % neck_size)
-        print('class number is %d' % num_classes)
+        print('class number is %d' % class_num)
         print('initial channel number is %d' % init_chan_num)
         num_chans = init_chan_num
-        super(_HourglassWrapper, self).__init__()
+        super(_CU_Net_Wrapper, self).__init__()
         self.layer_num = layer_num
         self.features = nn.Sequential(OrderedDict([
             ('conv0', nn.Conv2d(3, init_chan_num, kernel_size=7, stride=2, padding=3, bias=False)),
@@ -306,18 +306,18 @@ class _HourglassWrapper(nn.Module):
         #                                neck_size=neck_size, growth_rate=growth_rate)
         # hg_in_num = init_chan_num + growth_rate * 4
         print('channel number is %d' % num_chans)
-        self.hg = _Hourglass(in_num=num_chans, neck_size=neck_size, growth_rate=growth_rate,
-                             layer_num=layer_num, max_link=max_link)
+        self.hg = _CU_Net(in_num=num_chans, neck_size=neck_size, growth_rate=growth_rate,
+                             layer_num=layer_num, max_link=order)
 
         self.linears = nn.ModuleList()
         for i in range(0, layer_num):
-            self.linears.append(_Bn_Relu_Conv1x1(in_num=num_chans, out_num=num_classes))
+            self.linears.append(_Bn_Relu_Conv1x1(in_num=num_chans, out_num=class_num))
         # self.linears = nn.ModuleList(self.linears)
         # intermedia_in_nums = []
         # for i in range(0, num_units-1):
         #     intermedia_in_nums.append(num_chans * (i+2))
         self.intermedia = _IntermediaBlock(in_num=num_chans, out_num=num_chans,
-                                           layer_num=layer_num, max_link=max_link)
+                                           layer_num=layer_num, max_link=order)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
@@ -359,12 +359,11 @@ class _HourglassWrapper(nn.Module):
         assert len(self.loss_achors) == len(out)
         return out
 
-def create_dense_unet(neck_size, growth_rate, init_chan_num,
-                      num_classes, layer_num, max_link, inter_loss_num):
-    net = _HourglassWrapper(init_chan_num=init_chan_num, neck_size=neck_size,
-                            growth_rate=growth_rate, num_classes=num_classes,
-                            layer_num=layer_num, max_link=max_link,
-                            inter_loss_num=inter_loss_num)
-    return net
+def create_cu_net(neck_size, growth_rate, init_chan_num,
+                  class_num, layer_num, order, loss_num):
 
+    net = _CU_Net_Wrapper(init_chan_num=init_chan_num, neck_size=neck_size,
+                          growth_rate=growth_rate, class_num=class_num,
+                          layer_num=layer_num, order=order, loss_num=loss_num)
+    return net
 

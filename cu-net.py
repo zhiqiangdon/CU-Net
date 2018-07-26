@@ -20,7 +20,7 @@ import torch.utils.data
 
 from options.train_options import TrainOptions
 from data.mpii_for_mpii_22 import MPII
-from models.cu_net import create_dense_unet
+from models.cu_net import create_cu_net
 from utils.util import AverageMeter, adjust_lr
 from utils.util import TrainHistory, get_n_params, get_n_trainable_params, get_n_conv_params
 from utils.visualizer import Visualizer
@@ -43,11 +43,9 @@ def main():
     visualizer.log_name = os.path.join(exp_dir, log_name)
     os.environ['CUDA_VISIBLE_DEVICES'] = opt.gpu_id
     # if opt.dataset == 'mpii':
-    num_classes = 16
-    layer_num = 8
-    net = create_dense_unet(neck_size=4, growth_rate=32, init_chan_num=128,
-                            num_classes=num_classes, layer_num=layer_num,
-                            max_link=layer_num-1, inter_loss_num=1)
+    net = create_cu_net(neck_size=4, growth_rate=32, init_chan_num=128,
+                        class_num=opt.class_num, layer_num=opt.layer_num,
+                        order=opt.order, loss_num=opt.loss_num)
     # num1 = get_n_params(net)
     # num2 = get_n_trainable_params(net)
     # num3 = get_n_conv_params(net)
@@ -109,7 +107,7 @@ def main():
         val_loss, val_pckh, predictions = validate(val_loader, net,
                                                    train_history.epoch[-1]['epoch'],
                                                    visualizer, idx, joint_flip_index,
-                                                   num_classes)
+                                                   opt.class_num)
         checkpoint.save_preds(predictions)
         return
 
@@ -126,7 +124,7 @@ def main():
         # evaluate on validation set
         val_loss, val_pckh, predictions = validate(val_loader, net, epoch,
                                                    visualizer, idx, joint_flip_index,
-                                                   num_classes)
+                                                   opt.class_num)
         # visualizer.display_imgpts(imgs, pred_pts, 4)
         # exit()
         # update training history
@@ -208,14 +206,14 @@ def train(train_loader, net, optimizer, epoch, visualizer, idx, opt):
     return losses.avg, pckhs_origin_res.avg
 
 
-def validate(val_loader, net, epoch, visualizer, idx, joint_flip_index, num_classes):
+def validate(val_loader, net, epoch, visualizer, idx, joint_flip_index, class_num):
     batch_time = AverageMeter()
     losses = AverageMeter()
     pckhs = AverageMeter()
     pckhs_origin_res = AverageMeter()
     img_batch_list = []
     pts_batch_list = []
-    predictions = torch.Tensor(val_loader.dataset.__len__(), num_classes, 2)
+    predictions = torch.Tensor(val_loader.dataset.__len__(), class_num, 2)
 
     # switch to evaluate mode
     net.eval()

@@ -11,18 +11,16 @@ class BaseOptions():
     def initialize(self):
         self.parser.add_argument('--data_dir', type=str, default='./dataset',
                     help='training data or listfile path')
-        self.parser.add_argument('--exp_dir',type=str, default='/bigdata1/zt53/exp/bmcv2018',
+        self.parser.add_argument('--exp_dir',type=str, default='/bigdata1/zt53/exp/',
                     help='root experimental directory')
         self.parser.add_argument('--exp_id', type=str, default='',
                     help='experimental name')
         self.parser.add_argument('--gpu_id', type=str, default='0',
-                    help='gpu ids: e.g. 0  0,1,2, 0,2') ##TO DO
+                    help='gpu ids: e.g. 0  0,1,2, 0,2')
         self.parser.add_argument('--nThreads', type=int, default=4,
                     help='number of data loading threads')
         self.parser.add_argument('--is_train', type=bool, default=True,
                     help='training mode')
-        self.parser.add_argument('--is_part', type=bool, default=False,
-                    help='using body parts for the detection')
         self.parser.add_argument('--use_visdom', type=bool, default=False,
                     help='use visdom to display')
         self.parser.add_argument('--vis_env', type=str, default='main',
@@ -30,9 +28,9 @@ class BaseOptions():
         self.parser.add_argument('--use_html', type=bool, default=False,
                     help='use html to store images')
         self.parser.add_argument('--display_winsize', type=int, default=256,
-                    help='display window size') ##TO DO
-	#self.parser.add_argument('--dataset', type=str, default='mpii',
-        #            help='dataset type')
+                    help='display window size')
+        self.parser.add_argument('--dataset', type=str, default='mpii',
+                       help='dataset type')
 
         self.initialized = True
 
