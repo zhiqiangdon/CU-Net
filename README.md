@@ -36,5 +36,11 @@ If you find this code useful in your research, please consider citing:
   booktitle={ECCV},
   year={2018}
 }
+@inproceedings{tang2018cu,
+  title={CU-Net: Coupled U-Nets},
+  author={Tang, Zhiqiang and Peng, Xi and Geng, Shijie and Zhu, Yizhe and Metaxas, Dimitris},
+  booktitle={BMVC},
+  year={2018}
+}
 ```
 
