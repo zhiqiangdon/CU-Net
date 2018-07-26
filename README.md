@@ -6,7 +6,7 @@ The follwoing figure gives an illustration of naive dense U-Net, stacked U-Nets 
 
 If we couple each U-Net pair in multiple U-Nets, the coupling connections would have quadratic growth with respect to the U-Net number. To make the model more parameter efficient, we propose the order-K coupling to trim off the long-distance coupling connections.
 <p align="center"><img src="figures/order-k.jpg" alt="" width="400"></p>
-For simplicity, each dot represents one U-Net. The red and blue lines are the shortcut connections of inside semantic blocks and outside inputs. Order-0 connectivity ({\bf Top}) strings U-Nets together only by their inputs and outputs, i.e. stacked U-Nets. Order-1 connectivity ({\bf Middle}) has shortcut connections for adjacent U-Nets. Similarly, order-2 connectivity ({\bf Bottom}) has shortcut connections for 3 nearby U-Nets.
+For simplicity, each dot represents one U-Net. The red and blue lines are the shortcut connections of inside semantic blocks and outside inputs. Order-0 connectivity (Top) strings U-Nets together only by their inputs and outputs, i.e. stacked U-Nets. Order-1 connectivity (Middle) has shortcut connections for adjacent U-Nets. Similarly, order-2 connectivity (Bottom) has shortcut connections for 3 nearby U-Nets.
 
 ### Prerequisites
 
