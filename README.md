@@ -31,7 +31,7 @@ python cu-net.py --gpu_id 0 --exp_id cu-net-2 --is_train false --bs 24 --resume_
 ```
 layer_num     # number of coupled U-Nets
 order         # the order of coupling
-loss_num      # number of losses. Losses are uniformly distributed along the CU-Net. Each U-Net at most has one loss (loss_num <= layer_num)
+loss_num      # number of losses. Losses are uniformly distributed along the CU-Net. Each U-Net at most has one loss. (loss_num <= layer_num)
 ```
 
 ## Citation
