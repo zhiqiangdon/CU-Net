@@ -11,84 +11,11 @@ from operator import mul
 import torch.nn.functional as F
 import torch.utils.model_zoo as model_zoo
 from torch.nn.parameter import Parameter
+from options.train_options import TrainOptions
+from utils.quantize import *
 
-
-class BinOp():
-    def __init__(self, model):
-        # count the number of Conv2d
-        count_Conv2d = 0
-        for m in model.modules():
-            if isinstance(m, nn.Conv2d):
-                count_Conv2d = count_Conv2d + 1
-
-        start_range = 1
-        end_range = count_Conv2d-2
-        self.bin_range = numpy.linspace(start_range,
-                end_range, end_range-start_range+1)\
-                        .astype('int').tolist()
-        self.num_of_params = len(self.bin_range)
-        self.saved_params = []
-        self.target_params = []
-        self.target_modules = []
-        index = -1
-        for m in model.modules():
-            if isinstance(m, nn.Conv2d):
-                index = index + 1
-                if index in self.bin_range:
-                    tmp = m.weight.data.clone()
-                    self.saved_params.append(tmp)
-                    self.target_modules.append(m.weight)
-
-    def binarization(self):
-        self.meancenterConvParams()
-        self.clampConvParams()
-        self.save_params()
-        self.binarizeConvParams()
-
-    def meancenterConvParams(self):
-        for index in range(self.num_of_params):
-            s = self.target_modules[index].data.size()
-            negMean = self.target_modules[index].data.mean(1).\
-                    mul(-1).expand_as(self.target_modules[index].data)
-            self.target_modules[index].data = self.target_modules[index].data.add(negMean)
-
-    def clampConvParams(self):
-        for index in range(self.num_of_params):
-            self.target_modules[index].data.clamp(-1.0, 1.0,
-                    out = self.target_modules[index].data)
-
-    def save_params(self):
-        for index in range(self.num_of_params):
-            self.saved_params[index].copy_(self.target_modules[index].data)
-
-    def binarizeConvParams(self):
-        for index in range(self.num_of_params):
-            n = self.target_modules[index].data[0].nelement()
-            s = self.target_modules[index].data.size()
-            m = self.target_modules[index].data.norm(1, 3)\
-                    .sum(2).sum(1).div(n)
-            self.target_modules[index].data.sign()\
-                    .mul(m.expand(s), out=self.target_modules[index].data)
-
-    def restore(self):
-        for index in range(self.num_of_params):
-            self.target_modules[index].data.copy_(self.saved_params[index])
-
-    def updateBinaryGradWeight(self):
-        for index in range(self.num_of_params):
-            weight = self.target_modules[index].data
-            n = weight[0].nelement()
-            s = weight.size()
-            m = weight.norm(1, 3)\
-                    .sum(2).sum(1).div(n).expand(s)
-            m[weight.lt(-1.0)] = 0 
-            m[weight.gt(1.0)] = 0
-            m = m.mul(self.target_modules[index].grad.data)
-            m_add = weight.sign().mul(self.target_modules[index].grad.data)
-            m_add = m_add.sum(3)\
-                    .sum(2).sum(1).div(n).expand(s)
-            m_add = m_add.mul(weight.sign())
-            self.target_modules[index].grad.data = m.add(m_add).mul(1.0-1.0/s[1]).mul(n)
+opt = TrainOptions().parse() 
+bitsI = opt.bits_i
 
 class _SharedAllocation(object):
     """
@@ -166,6 +93,9 @@ class _DenseLayer(nn.Sequential):
                                                            in_num, neck_size * growth_rate))
         self.add_module('norm.2', nn.BatchNorm2d(neck_size * growth_rate))
         self.add_module('relu.2', nn.ReLU(inplace=True))
+        # QuanInput2d: No.1 
+        if bitsI <= 15:
+            self.add_module('quaninput.2', QuanInput2d())
         self.add_module('conv.2', nn.Conv2d(neck_size * growth_rate, growth_rate,
                                             kernel_size=3, stride=1, padding=1, bias=False))
 
@@ -344,6 +274,9 @@ class _Bn_Relu_Conv1x1(nn.Sequential):
         super(_Bn_Relu_Conv1x1, self).__init__()
         self.add_module('norm', nn.BatchNorm2d(in_num))
         self.add_module('relu', nn.ReLU(inplace=True))
+        # QuanInput2d: No.2 
+        if bitsI <= 15:
+            self.add_module('quaninput', QuanInput2d())
         self.add_module('conv', nn.Conv2d(in_num, out_num,
                                           kernel_size=1, stride=1, bias=False))
 

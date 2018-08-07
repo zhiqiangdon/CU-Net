@@ -30,6 +30,12 @@ class TrainOptions(BaseOptions):
                                  help='print log every n iterations')
         self.parser.add_argument('--display_freq', type=int, default=10,
                                  help='display figures every n iterations')
+        self.parser.add_argument('--bits_w', type=int, default=1,
+                    help='bits of weight')
+        self.parser.add_argument('--bits_i', type=int, default=8,
+                    help='bits of input')
+        self.parser.add_argument('--bits_g', type=int, default=8,
+                    help='bits of gradient')
 
         # self.parser.add_argument('--momentum', type=float, default=0.90,
         #             help='momentum term of sgd')
