@@ -13,7 +13,8 @@ For simplicity, each dot represents one U-Net. The red and blue lines are the sh
 This package has the following requirements:
 
 * `Python 2.7`
-* `Pytorch 0.4.0`
+* `Pytorch v0.4.0` or `Pytorch v0.1.12`
+Note that the code with postfix `prev-version` requires `Pytorch v0.1.12`.
 
 ### Training
 
