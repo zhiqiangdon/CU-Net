@@ -21,7 +21,7 @@ import torch.utils.data
 from options.train_options import TrainOptions
 from data.mpii_for_mpii_22 import MPII
 from models.cu_net_prev_version_wig import create_cu_net
-from utils.quantize import QuanOp
+from utils.quantize_prev_version import QuanOp
 from utils.util import AverageMeter, adjust_lr
 from utils.util import TrainHistory, get_n_params, get_n_trainable_params, get_n_conv_params
 from utils.visualizer import Visualizer

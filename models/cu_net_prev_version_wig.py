@@ -12,7 +12,7 @@ import torch.nn.functional as F
 import torch.utils.model_zoo as model_zoo
 from torch.nn.parameter import Parameter
 from options.train_options import TrainOptions
-from utils.quantize import *
+from utils.quantize_prev_version import *
 
 opt = TrainOptions().parse() 
 bitsI = opt.bits_i

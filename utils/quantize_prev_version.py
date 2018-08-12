@@ -110,7 +110,7 @@ class QuanOp():
     def meancenterConvParams(self):
         for index in range(self.num_of_params):
             s = self.target_modules[index].data.size()
-            negMean = self.target_modules[index].data.mean(1, True).\
+            negMean = self.target_modules[index].data.mean(1).\
                     mul(-1).expand_as(self.target_modules[index].data)
             self.target_modules[index].data = self.target_modules[index].data.add(negMean)
 
@@ -127,24 +127,24 @@ class QuanOp():
             if bitsW == 1:
               n = self.target_modules[index].data[0].nelement()
               s = self.target_modules[index].data.size()
-              m = self.target_modules[index].data.norm(1, 3, True)\
-                      .sum(2, True).sum(1, True).div(n).expand(s)
+              m = self.target_modules[index].data.norm(1, 3)\
+                      .sum(2).sum(1).div(n).expand(s)
               m = Q(m, bitsG)     
-              self.target_modules[index].data = self.target_modules[index].data.sign()\
-                      .mul(m)
+              self.target_modules[index].data.sign()\
+                      .mul(m, out=self.target_modules[index].data)
             if bitsW == 2:
               w = self.target_modules[index].data
               n = self.target_modules[index].data[0].nelement()
               s = self.target_modules[index].data.size()
-              d = self.target_modules[index].data.norm(1, 3, True)\
-                      .sum(2, True).sum(1, True).div(n).mul(0.7)
+              d = self.target_modules[index].data.norm(1, 3)\
+                      .sum(2).sum(1).div(n).mul(0.7)
               wt = w
               for col in range(s[0]):
                   d_col = d[col,0,0,0]
                   wt_neg = w[col,:,:,:].lt(-1.0 * d_col).float().mul(-1)
                   wt_pos = w[col,:,:,:].gt(1.0  * d_col).float()
                   wt[col,:,:,:] = wt_pos.add(wt_neg)
-              self.target_modules[index].data = wt.mul(1)        
+              wt.mul(1, out=self.target_modules[index].data)        
             else:
               self.target_modules[index].data = Q(C(self.target_modules[index].data, bitsW), bitsW)
 
@@ -159,15 +159,15 @@ class QuanOp():
               weight = self.target_modules[index].data
               n = weight[0].nelement()
               s = weight.size()
-              m = weight.norm(1, 3, True)\
-                      .sum(2, True).sum(1, True).div(n).expand(s)
+              m = weight.norm(1, 3)\
+                      .sum(2).sum(1).div(n).expand(s)
               m[weight.lt(-1.0)] = 0 
               m[weight.gt(1.0)] = 0
               m = Q(m, bitsG)
               m = m.mul(self.target_modules[index].grad.data)
               m_add = weight.sign().mul(self.target_modules[index].grad.data)
-              m_add = m_add.sum(3, True)\
-                      .sum(2, True).sum(1, True).div(n).expand(s)
+              m_add = m_add.sum(3)\
+                      .sum(2).sum(1).div(n).expand(s)
               m_add = m_add.mul(weight.sign())
               self.target_modules[index].grad.data = m.add(m_add).mul(1.0-1.0/s[1]).mul(n)
               self.target_modules[index].grad.data = Q(C(self.target_modules[index].grad.data, bitsG), bitsG)
