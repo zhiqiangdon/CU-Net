@@ -20,7 +20,7 @@ import torch.utils.data
 
 from options.train_options import TrainOptions
 from data.mpii_for_mpii_22 import MPII
-from models.cu_net_prev_version_wig import create_dense_unet
+from models.cu_net_prev_version_wig import create_cu_net
 from utils.quantize import QuanOp
 from utils.util import AverageMeter, adjust_lr
 from utils.util import TrainHistory, get_n_params, get_n_trainable_params, get_n_conv_params
@@ -47,7 +47,7 @@ def main():
     # if opt.dataset == 'mpii':
     num_classes = 16
     # layer_num = 2
-    net = create_dense_unet(neck_size=4, growth_rate=32, init_chan_num=128,
+    net = create_cu_net(neck_size=4, growth_rate=32, init_chan_num=128,
                             num_classes=num_classes, layer_num=opt.layer_num,
                             max_link=1, inter_loss_num=opt.layer_num)
     # num1 = get_n_params(net)

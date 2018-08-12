@@ -307,9 +307,9 @@ class _Bn_Relu_Conv1x1(nn.Sequential):
 #         return out
 
 
-class _Hourglass(nn.Module):
+class _CU_Net(nn.Module):
     def __init__(self, in_num, neck_size, growth_rate, layer_num, max_link):
-        super(_Hourglass, self).__init__()
+        super(_CU_Net, self).__init__()
         self.down_blocks = []
         self.up_blocks = []
         self.num_blocks = 4
@@ -351,7 +351,7 @@ class _Hourglass(nn.Module):
             # print 'output size is ', x.size()
         return x
 
-class _HourglassWrapper(nn.Module):
+class _CU_Net_Wrapper(nn.Module):
     def __init__(self, init_chan_num, neck_size, growth_rate,
                  num_classes, layer_num, max_link, inter_loss_num):
         assert inter_loss_num <= layer_num
@@ -377,7 +377,7 @@ class _HourglassWrapper(nn.Module):
         print('class number is %d' % num_classes)
         print('initial channel number is %d' % init_chan_num)
         num_chans = init_chan_num
-        super(_HourglassWrapper, self).__init__()
+        super(_CU_Net_Wrapper, self).__init__()
         self.layer_num = layer_num
         self.features = nn.Sequential(OrderedDict([
             ('conv0', nn.Conv2d(3, init_chan_num, kernel_size=7, stride=2, padding=3, bias=False)),
@@ -389,7 +389,7 @@ class _HourglassWrapper(nn.Module):
         #                                neck_size=neck_size, growth_rate=growth_rate)
         # hg_in_num = init_chan_num + growth_rate * 4
         print('channel number is %d' % num_chans)
-        self.hg = _Hourglass(in_num=num_chans, neck_size=neck_size, growth_rate=growth_rate,
+        self.hg = _CU_Net(in_num=num_chans, neck_size=neck_size, growth_rate=growth_rate,
                              layer_num=layer_num, max_link=max_link)
 
         self.linears = []
@@ -442,9 +442,9 @@ class _HourglassWrapper(nn.Module):
         assert len(self.loss_achors) == len(out)
         return out
 
-def create_dense_unet(neck_size, growth_rate, init_chan_num,
+def create_cu_net(neck_size, growth_rate, init_chan_num,
                       num_classes, layer_num, max_link, inter_loss_num):
-    net = _HourglassWrapper(init_chan_num=init_chan_num, neck_size=neck_size,
+    net = _CU_Net_Wrapper(init_chan_num=init_chan_num, neck_size=neck_size,
                             growth_rate=growth_rate, num_classes=num_classes,
                             layer_num=layer_num, max_link=max_link,
                             inter_loss_num=inter_loss_num)
