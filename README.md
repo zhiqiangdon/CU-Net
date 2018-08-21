@@ -1,5 +1,6 @@
 # 
 ## **[Quantized Densely Connected U-Nets for Efficient Landmark Localization](https://arxiv.org/abs/1808.02194)**
+## **[CU-Net: Coupled U-Nets](https://arxiv.org/abs/1808.06521)**
 
 ## Overview
 The follwoing figure gives an illustration of naive dense U-Net, stacked U-Nets and coupled U-Nets (CU-Net). The naive dense U-Net and stacked U-Nets have shortcut connections only inside each U-Net. In contrast, the coupled U-Nets also have connections for semantic blocks across U-Nets. The CU-Net is a hybrid of naive dense U-Net and stacked U-Net, integrating the merits of both dense connectivity, intermediate supervisions and multi-stage top-down and bottom-up refinement. The resulted CU-Net could save ~70% parameters of the previous stacked U-Nets but with comparable accuracy.
