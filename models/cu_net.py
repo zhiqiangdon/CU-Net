@@ -273,21 +273,21 @@ class _CU_Net_Wrapper(nn.Module):
                  class_num, layer_num, order, loss_num):
         assert loss_num <= layer_num and loss_num >= 1
         loss_every = float(layer_num) / float(loss_num)
-        self.loss_achors = []
+        self.loss_anchors = []
         for i in range(0, loss_num):
-            tmp_achor = int(round(loss_every * (i+1)))
-            if tmp_achor <= layer_num:
-                self.loss_achors.append(tmp_achor)
+            tmp_anchor = int(round(loss_every * (i+1)))
+            if tmp_anchor <= layer_num:
+                self.loss_anchors.append(tmp_anchor)
 
-        assert layer_num in self.loss_achors
-        assert loss_num == len(self.loss_achors)
+        assert layer_num in self.loss_anchors
+        assert loss_num == len(self.loss_anchors)
 
         if order >= layer_num:
             print 'order is larger than the layer number.'
             exit()
         print('layer number is %d' % layer_num)
         print('loss number is %d' % loss_num)
-        print('loss achors are: ', self.loss_achors)
+        print('loss achors are: ', self.loss_anchors)
         print('order is %d' % order)
         print('growth rate is %d' % growth_rate)
         print('neck size is %d' % neck_size)
@@ -350,13 +350,13 @@ class _CU_Net_Wrapper(nn.Module):
             x = self.hg(x, i)
             # print 'x size after hg is ', x.size()
             # middle.append(x)
-            if (i+1) in self.loss_achors:
+            if (i+1) in self.loss_anchors:
                 tmp_out = self.linears[i](x)
                 # print 'tmp output size is ', tmp_out.size()
                 out.append(tmp_out)
             # if i < self.num_units-1:
         # exit()
-        assert len(self.loss_achors) == len(out)
+        assert len(self.loss_anchors) == len(out)
         return out
 
 def create_cu_net(neck_size, growth_rate, init_chan_num,
