@@ -44,11 +44,11 @@ def main():
     visualizer.log_name = os.path.join(exp_dir, log_name)
     os.environ['CUDA_VISIBLE_DEVICES'] = opt.gpu_id
     # if opt.dataset == 'mpii':
-    num_classes = 16
-    layer_num = 2
+    class_num = 16
+    layer_num = opt.layer_num
     net = create_cu_net(neck_size=4, growth_rate=32, init_chan_num=128,
-                            num_classes=num_classes, layer_num=layer_num,
-                            max_link=layer_num-1, inter_loss_num=1)
+                            class_num=class_num, layer_num=layer_num,
+                            order=1, loss_num=layer_num)
     # num1 = get_n_params(net)
     # num2 = get_n_trainable_params(net)
     # num3 = get_n_conv_params(net)
