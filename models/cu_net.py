@@ -287,7 +287,7 @@ class _CU_Net_Wrapper(nn.Module):
             exit()
         print('layer number is %d' % layer_num)
         print('loss number is %d' % loss_num)
-        print('loss achors are: ', self.loss_anchors)
+        print('loss anchors are: ', self.loss_anchors)
         print('order is %d' % order)
         print('growth rate is %d' % growth_rate)
         print('neck size is %d' % neck_size)
