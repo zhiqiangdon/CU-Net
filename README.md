@@ -39,8 +39,8 @@ loss_num      # number of losses. Losses are uniformly distributed along the CU-
 ```
 
 ### Pretrained Models
-[face-layer-num-8-order-1](https://drive.google.com/file/d/1_znMNl2PDBW5E-bhJeBuDGB7-ExzqAoq/view?usp=sharing)
-[human-layer-num-16-order-1](https://drive.google.com/file/d/1Y7b6vdBXVfecemykOwvI1U2PrrjnX1TZ/view?usp=sharing)
+1. [face-layer-num-8-order-1](https://drive.google.com/file/d/1_znMNl2PDBW5E-bhJeBuDGB7-ExzqAoq/view?usp=sharing)
+2. [human-layer-num-16-order-1](https://drive.google.com/file/d/1Y7b6vdBXVfecemykOwvI1U2PrrjnX1TZ/view?usp=sharing)
 
 ## Citation
 If you find this code useful in your research, please consider citing:
