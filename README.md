@@ -38,8 +38,9 @@ order         # the order of coupling
 loss_num      # number of losses. Losses are uniformly distributed along the CU-Net. Each U-Net at most has one loss. (loss_num <= layer_num)
 ```
 
-### Project Page
-For more details, please refer to our **[project page](https://sites.google.com/site/xipengcshomepage/research/eccv18)**.
+### Pretrained Models
+[face-layer-num-8-order-1](https://drive.google.com/file/d/1_znMNl2PDBW5E-bhJeBuDGB7-ExzqAoq/view?usp=sharing)
+[human-layer-num-16-order-1](https://drive.google.com/file/d/1Y7b6vdBXVfecemykOwvI1U2PrrjnX1TZ/view?usp=sharing)
 
 ## Citation
 If you find this code useful in your research, please consider citing:
